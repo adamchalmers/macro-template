@@ -1,11 +1,14 @@
 # Rust proc-macro template
 
-Goal is to make the macro
+Rust macros are a bit tricky to structure correctly. Two common problems are:
 
- - testable
- - emit useful diagnostics to Rust Analyzer or other LSPs, even if the person calling the macro did something wrong.
+ - How do you test them?
+ - How do you ensure that, when users get something wrong, your macro still emits useful information to Rust Analyzer or other LSPs? For more on this problem watch [this EuroRust talk](https://www.youtube.com/watch?v=JceLEyphDXU)
 
-Structure based on
+# Acknowledgements
 
- - Code from Oxide Computer's macros like Dropshot and Daft
- - This writeup: https://www.schneems.com/2025/03/26/a-daft-procmacro-trick-how-to-emit-partialcode-errors/
+Big thank you to:
+
+ - Oxide Computer, whose macros like Dropshot and Daft provided me with great examples
+ - This [writeup](https://www.schneems.com/2025/03/26/a-daft-procmacro-trick-how-to-emit-partialcode-errors/) from Richard Schneeman analyzing the above Daft crate
+ - Lukas Wirth of Rust Analyzer who spoke about the problems that macros can cause for RA.
