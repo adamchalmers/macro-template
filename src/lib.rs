@@ -27,12 +27,19 @@ fn do_stdlib(
     do_stdlib_inner(metadata, attr, item)
 }
 
+/// If the macro encountered a fatal error, return Err.
+/// If the macro encountered some errors, but was also able to construct some source code,
+/// returns Ok with a non-empty vec of errors.
 fn do_stdlib_inner(
     metadata: Metadata,
     _attr: proc_macro2::TokenStream,
     _item: proc_macro2::TokenStream,
 ) -> Result<(proc_macro2::TokenStream, Vec<Error>), Error> {
     let name = metadata.name;
+    // Try to return errors in this vec, rather than returning them with ? or `return Err`.
+    // This way Rust Analyzer still gets some valid Rust source code to work with.
+    // E.g. if you're looping over some user input, prefer to append errors and `continue` rather than
+    // using ? or stopping the loop.
     let errors = Vec::new();
     let tokens = quote! {
         const NAME: &'static str = #name;
@@ -48,6 +55,8 @@ fn do_output(
         Ok((out, errors)) => {
             let compiler_errors = errors.iter().map(|err| err.to_compile_error());
 
+            // Put all the output we received first,
+            // then emit compiler errors about whatever the user got wrong.
             let output = quote! {
                 #out
                 #( #compiler_errors )*
